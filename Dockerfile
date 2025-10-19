@@ -4,6 +4,7 @@ ARG VERSION
 
 # Dependencies
 RUN apk add --no-cache \
+    bash \
     autoconf \
     automake \
     busybox \
@@ -38,19 +39,13 @@ RUN apk add --no-cache \
     libva-dev \
     libdrm-dev
 
-RUN git clone https://github.com/HandBrake/HandBrake.git /HandBrake
-
-WORKDIR /HandBrake
-
-RUN if [ -n "$VERSION" ]; then \
+RUN git clone https://github.com/HandBrake/HandBrake.git /HandBrake && \
+    cd /HandBrake && \
+    if [ -n "$VERSION" ]; then \
         git checkout refs/tags/$VERSION; \
-    fi
+    fi && \
+    ./configure --disable-gtk --enable-qsv --launch-jobs=$(nproc) --launch && \
+    cp build/HandBrakeCLI /usr/local/bin/ && \
+    rm -rf /HandBrake
 
-RUN ./configure --disable-gtk --enable-qsv --launch-jobs=$(nproc) --launch
-
-RUN cp build/HandBrakeCLI /usr/local/bin/
-
-RUN rm -rf /HandBrake
-
-ENTRYPOINT ["HandBrakeCLI"]
-CMD ["--help"]
+ENTRYPOINT ["bash"]
