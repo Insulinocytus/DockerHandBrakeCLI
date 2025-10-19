@@ -48,4 +48,5 @@ RUN git clone https://github.com/HandBrake/HandBrake.git /HandBrake && \
     cp build/HandBrakeCLI /usr/local/bin/ && \
     rm -rf /HandBrake
 
-ENTRYPOINT ["bash"]
+ENTRYPOINT ["HandBrakeCLI"]
+CMD ["--help"]
